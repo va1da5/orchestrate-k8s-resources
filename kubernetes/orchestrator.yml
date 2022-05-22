@@ -1,0 +1,129 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: orchestrator
+  labels:
+    name: orchestrator
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orchestrator-deploy
+  namespace: orchestrator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orchestrator
+  template:
+    metadata:
+      labels:
+        app: orchestrator
+    spec:
+      automountServiceAccountToken: true
+      serviceAccountName: orchestrator-account
+      containers:
+      - name: orchestrator
+        image: orchestrator:latest
+        imagePullPolicy: Never
+        args: ["-c", "uvicorn server:app --port 8000 --host 0.0.0.0"]
+        ports:
+        - containerPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator-svc
+  namespace: orchestrator
+spec:
+  type: NodePort
+  ports:
+    - port: 8000
+      targetPort: 8000
+  selector:
+    app: orchestrator
+
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: Role
+# metadata:
+#   name: pod-view-role
+# rules:
+#   - apiGroups: [""]
+#     resources: ["pods"]
+#     verbs: ["get", "list", "watch"]
+
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: Role
+# metadata:
+#   name: pod-exec-view-role
+#   namespace: orchestrator
+# rules:
+#   - apiGroups: [""]
+#     resources: ["pods/exec"]
+#     verbs: ["get", "create"]
+
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: orchestrator
+  name: pods-god-role
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: orchestrator-account
+  namespace: orchestrator
+automountServiceAccountToken: false
+
+# ---
+# kind: RoleBinding
+# apiVersion: rbac.authorization.k8s.io/v1
+# metadata:
+#   name: read-pods-svc-account
+#   namespace: orchestrator
+# subjects:
+#   - kind: ServiceAccount
+#     name: orchestrator-account
+# roleRef:
+#   kind: Role
+#   name: pod-view-role
+#   apiGroup: rbac.authorization.k8s.io
+
+# ---
+# kind: RoleBinding
+# apiVersion: rbac.authorization.k8s.io/v1
+# metadata:
+#   namespace: orchestrator
+#   name: read-pods-exec-svc-account
+# subjects:
+#   - kind: ServiceAccount
+#     name: orchestrator-account
+# roleRef:
+#   kind: Role
+#   name: pod-exec-view-role
+#   apiGroup: rbac.authorization.k8s.io
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pod-controller
+  namespace: orchestrator
+subjects:
+- kind: ServiceAccount
+  name: orchestrator-account
+roleRef:
+  kind: Role
+  name: pods-god-role
+  apiGroup: rbac.authorization.k8s.io

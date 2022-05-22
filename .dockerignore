@@ -1,0 +1,11 @@
+.venv
+.git
+.gitignore
+.vscode
+.mypy_cache
+.editorconfig
+.pylint
+local.txt
+Makefile
+pyproject.toml
+README.md
