@@ -22,6 +22,8 @@ minikube service orchestrator-svc --url -n orchestrator
 # get pod logs
 kubectl logs -f -n orchestrator $POD
 
+kubectl describe job/job-test -n orchestrator
+
 # delete pod
 kubectl delete pod/$POD -n orchestrator
 
@@ -41,4 +43,6 @@ kubectl exec -it $POD -n orchestrator -- /bin/bash
 - [Get started with Kubernetes (using Python)](https://kubernetes.io/blog/2019/07/23/get-started-with-kubernetes-using-python/)
 - [Accessing the Kubernetes API from a Pod](https://kubernetes.io/docs/tasks/run-application/access-api-from-pod/)
 - [Python kubernetes.config.load_incluster_config() Examples](https://www.programcreek.com/python/example/106725/kubernetes.config.load_incluster_config)
+- [bodywork-core/tests/unit_and_functional/test_k8s_batch_jobs.py](https://github.com/bodywork-ml/bodywork-core/blob/00dc53861dd133823515690ef4a38d168b3659b5/tests/unit_and_functional/test_k8s_batch_jobs.py)
+- [Minimal example for running on-demand K8s job using FastAPI](https://github.com/mloning/minimal-example-on-demand-k8s-job/tree/main)
 
