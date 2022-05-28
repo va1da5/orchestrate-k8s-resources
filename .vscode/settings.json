@@ -15,6 +15,11 @@
     }
   },
   "cSpell.words": [
-    "kubernetes"
+    "backoff",
+    "fastapi",
+    "incluster",
+    "kube",
+    "kubernetes",
+    "pydantic"
   ],
 }

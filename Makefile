@@ -2,6 +2,10 @@
 build:
 	docker build -t orchestrator .
 
+.PHONY: run
+run:
+	uvicorn server:app --reload --port 8000 --host 0.0.0.0
+
 .PHONY: deploy
 deploy:
 	kubectl apply -f kubernetes/orchestrator.yml
